@@ -8,12 +8,12 @@ RAG-QA is a full-stack Retrieval-Augmented Generation (RAG) application that all
 
 ## ✨ Features
 
-- 📄 **PDF Text Ingestion & Parsing**: Extracts and normalizes text from uploaded PDFs using `pdf-parse`.
+- 📄 **In-Memory PDF Parsing**: Streams and extracts text directly from memory buffers using `multer.memoryStorage()` and `pdf-parse` (zero disk footprint).
 - ✂️ **Smart Chunking**: Recursive character text splitting (512-character window with 50-character overlap) preserving context across boundaries.
 - 🧠 **Gemini Vector Embeddings**: High-dimensional embeddings generated with `gemini-embedding-2`.
 - ⚡ **ChromaDB Storage**: Cosine distance vector indexing supporting both local ChromaDB and Chroma Cloud.
 - 🎯 **Semantic Retrieval & Gating**: Cosine similarity search scoped to the uploaded document with confidence score gating to prevent hallucinations.
-- 🌊 **Real-Time Streaming Answers**: Server-Sent Events (SSE) streaming token-by-token using `gemini-3.6-flash`.
+- 🌊 **Real-Time Streaming Answers**: Server-Sent Events (SSE) streaming token-by-token using Gemini (`gemini-flash-lite-latest` or any model configured via `GEMINI_MODEL`).
 - 🛡️ **Anti-Hallucination Guardrails**: Low-temperature generation (`0.1`) with strict context-only prompting and explicit refusal when answers are not present in the document.
 
 ---
@@ -31,7 +31,7 @@ RAG-QA is a full-stack Retrieval-Augmented Generation (RAG) application that all
 │                     EXPRESS BACKEND                         │
 │                                                             │
 │   POST /upload                                              │
-│   ├── pdf-parse (Text Extraction)                           │
+│   ├── In-Memory Buffer Extraction via pdf-parse             │
 │   ├── RecursiveCharacterTextSplitter (512 / 50 Chunks)      │
 │   ├── LangChain + Gemini Embedding-2                        │
 │   └── ChromaDB (Store vectors & document metadata)          │
@@ -39,7 +39,7 @@ RAG-QA is a full-stack Retrieval-Augmented Generation (RAG) application that all
 │   POST /query                                               │
 │   ├── Semantic Retrieval (Top-5 Chunks via ChromaDB)        │
 │   ├── Similarity Threshold Gate                             │
-│   └── Gemini 3.6 Flash Stream (SSE Events)                  │
+│   └── Gemini Model Stream (SSE Events)                      │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -58,8 +58,8 @@ RAG-QA is a full-stack Retrieval-Augmented Generation (RAG) application that all
 Clone this repository and install dependencies:
 
 ```bash
-git clone <your-repo-url>
-cd rag-qa-main
+git clone https://github.com/mnthnnshrma/RAG-QA.git
+cd RAG-QA
 npm install
 ```
 
@@ -76,7 +76,7 @@ Fill in your configuration:
 ```env
 # Google Gemini API
 GEMINI_API_KEY=your_gemini_api_key_here
-GEMINI_MODEL=gemini-3.6-flash
+GEMINI_MODEL=gemini-flash-lite-latest
 GEMINI_EMBEDDING_MODEL=gemini-embedding-2
 
 # Retrieval Configuration
