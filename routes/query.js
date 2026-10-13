@@ -4,7 +4,7 @@ import { retrieveChunks } from "../services/retriever.js";
 
 const router = express.Router();
 const fallbackAnswer = "I could not find relevant information in the uploaded document.";
-const generationModel = process.env.GEMINI_MODEL || "gemini-3.6-flash";
+const generationModel = process.env.GEMINI_MODEL || "gemini-flash-lite-latest";
 const minimumSimilarity = Number(process.env.RETRIEVAL_MIN_SCORE || "0.6");
 
 function writeEvent(res, event, payload) {
@@ -34,7 +34,7 @@ router.post("/", async (req, res) => {
     }
 
     const context = chunks.map((chunk, index) => `[${index + 1}] ${chunk.text}`).join("\n\n");
-    const prompt = `System: "You are a helpful assistant. Answer the user's question using ONLY the context provided below. Do not use any prior knowledge. If the answer is not present in the context, respond with exactly: I don't know based on the provided document."
+    const prompt = `System: "You are a helpful assistant. Answer the user's question using ONLY the context provided below. Do not use any prior knowledge. If the answer is not present in the context, respond with exactly: I could not find relevant information in the uploaded document."
 Context:
 ${context}
 Question: ${question.trim()}`;

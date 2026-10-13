@@ -2,14 +2,14 @@ import fs from "node:fs/promises";
 import pdf from "pdf-parse";
 
 /**
- * Extracts and normalizes the readable text from a PDF file.
+ * Extracts and normalizes the readable text from a PDF file or buffer.
  *
- * @param {string} filePath Absolute path of the uploaded PDF.
+ * @param {string|Buffer} input Absolute path of the PDF or a Buffer containing PDF bytes.
  * @returns {Promise<string>} Cleaned PDF text.
  */
-export async function parsePDF(filePath) {
-  // Read the uploaded file into a buffer for pdf-parse.
-  const fileBuffer = await fs.readFile(filePath);
+export async function parsePDF(input) {
+  // Read into a buffer if a file path string was provided, or use the buffer directly.
+  const fileBuffer = Buffer.isBuffer(input) ? input : await fs.readFile(input);
   // Extract the text layer from every page in the document.
   const parsed = await pdf(fileBuffer);
   // Collapse repeated whitespace so chunk boundaries are consistent and useful.
